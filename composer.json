@@ -1,0 +1,35 @@
+{
+    "name": "habib/payment",
+    "description": "payment",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohamed Habib",
+            "email": "mohamedhabibwork@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0",
+        "srmklive/paypal": "^1|^2|^3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Habib\\Payment\\": "src/"
+        },
+        "files": [
+            "src/Helpers/main.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Habib\\Payment\\Providers\\PaymentServiceProvider"
+            ],
+            "aliases": {
+                "Cart": "Habib\\Payment\\Facades\\Cart"
+            }
+        }
+    }
+}
