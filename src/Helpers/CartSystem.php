@@ -39,8 +39,7 @@ class CartSystem
      */
     public function __construct()
     {
-
-        $this->cart = $this->checkAllAuth() ? new CartDataBase() :new CartSession();
+        $this->cart = auth()->check() ? new CartDataBase() :new CartSession();
         $this->setShipping((float)config('payment.shipping',0));
         $this->setTax((float)config('payment.tax',0));
     }
@@ -220,13 +219,4 @@ class CartSystem
         return $callable($this,$this->cart);
     }
 
-    public function checkAllAuth()
-    {
-        foreach (config('auth.guards') as $guard => $array) {
-            if (auth($guard)->check()) {
-                return auth($guard)->user();
-            }
-        }
-        return  false;
-    }
 }

@@ -17,7 +17,7 @@ class CartDataBase implements CartInterface
      */
     public function __construct()
     {
-        $this->user = $this->checkAllAuth();
+        $this->user = auth()->check() ? auth()->user() : optional([]);
         $this->addCartToLoginUser();
     }
 
@@ -47,13 +47,13 @@ class CartDataBase implements CartInterface
      */
     public function findInCart(array $validated)
     {
-        return $this->user->carts()->loader()->when($validated['id'] ?? null, function ($q) use ($validated) {
-            $q->where('id', $validated['id']);
-        })->when($validated['cartable_type'] ?? null, function ($q) use ($validated) {
-            $q->where('cartable_type', $validated['cartable_type']);
-        })->when($validated['cartable_id'] ?? null, function ($q) use ($validated) {
-            $q->where('cartable_id', $validated['cartable_id']);
-        })->where('owner_id',$this->user->id)->where('owner_type',$this->user->getMorphClass())->first();
+        return $this->user->carts()->loader()
+        ->when($validated['id'] ?? null, fn ($q) => $q->where('id', $validated['id']))
+        ->when($validated['cartable_type'] ?? null, fn ($q) => $q->where('cartable_type', $validated['cartable_type']))
+        ->when($validated['cartable_id'] ?? null, fn ($q) => $q->where('cartable_id', $validated['cartable_id']))
+        ->when($this->user ?? null, fn ($q) => $q->where('owner_id', $this->user->id))
+        ->where('owner_type',$this->user->getMorphClass())
+        ->first();
     }
 
     /**
@@ -128,13 +128,4 @@ class CartDataBase implements CartInterface
         return $this;
     }
 
-    public function checkAllAuth()
-    {
-        foreach (config('auth.guards') as $guard => $array) {
-            if (auth($guard)->check()) {
-               return auth($guard)->user();
-            }
-        }
-        return  optional('');
-    }
 }
