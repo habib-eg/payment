@@ -21,7 +21,7 @@ trait InCart
 
     public function ownCarts()
     {
-        return $this->carts()->where(User::USER_ID ?? 'user_id' , auth()->check() ? auth()->id() : 0);
+        return $this->carts()->where('owner_id' , auth()->check() ? auth()->id() : 0)->where('owner_type',auth()->check() ? auth()->user()->getMorphClass() : '');
     }
 
     /**
